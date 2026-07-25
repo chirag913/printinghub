@@ -97,26 +97,43 @@ Any product **without** an `image` falls back to its built-in CSS illustration, 
 catalog never shows a broken or generic placeholder. If a photo path is wrong or the file
 is missing, the illustration automatically takes over at runtime.
 
-### ⚠️ Current state: one real photo, 45 illustrations
+### Current state: every product has a themed illustration
 
-`business-card-matte` uses a real CC0 photograph as a working example of the pipeline.
-The rest still use illustrations, and **this is deliberate** — automated stock sourcing
-was attempted and rejected for good reasons:
+All 46 products render a CSS illustration tinted with a per-product accent colour, so
+neighbouring products in a grid look distinct while staying on brand. The accent is derived
+from the product id, so **new products get their own colour automatically** — nothing to
+configure. To pin a specific colour, set `accent: <0-7>` on the product (index into
+`ILLUS_ACCENTS` in `js/site.js`).
 
-- Freely-licensed image pools are dominated by museum/archive material (19th-century
-  letterheads, a 1945 leaflet, a cuneiform receipt tablet) — not modern commercial printing.
-- Most "business card" results show **another real company's branding**, including one with
-  a named person's email and phone number on the card.
-- Others carry design-studio **watermarks**, or photograph **copyrighted card artwork**
-  (e.g. a retail rack of Hallmark-style cards).
+**Why not stock photos?** Two rounds of automated sourcing across openly-licensed image
+libraries were attempted and rejected:
 
-Putting any of those on a commercial print shop's site would misrepresent other businesses
-and create real licensing exposure.
+- The pools are dominated by museum/archive material (19th-century letterheads, a 1945
+  leaflet, a cuneiform receipt tablet) — not modern commercial printing.
+- Many "business card" results show **another real company's branding**, including one with
+  a named person's email and phone number printed on the card.
+- Others carry **watermarks** — including images *tagged CC0* that still had
+  "Download Full Size Image from …" burned across them.
+- Some photograph **copyrighted artwork** (e.g. a retail rack of Hallmark-style cards).
 
-**The right fix is your own photography** — and for a print shop that is also the better
-marketing: customers want to see *your* work. Shoot your actual products on a clean
-surface, then upload them through `admin.html`, which handles resizing and naming for you.
-If you'd rather buy stock, Adobe Stock / Shutterstock / iStock licences cover this use.
+Roughly one image in twenty was usable, which cannot produce a consistent 46-product
+catalog. A grid mixing three photos with forty-three drawings looks broken; a consistent
+illustrated set looks deliberate.
+
+> **Do not copy images from other printing companies' websites.** An unwatermarked photo is
+> just as copyrighted as a watermarked one — the watermark is only a visible marker, not the
+> thing that creates the rights. Copying competitors' product shots onto a commercial site is
+> straightforward infringement and invites takedowns and demand letters.
+
+**When you want real photos**, in order of preference:
+1. **Shoot your own products.** Best marketing too — customers want to see *your* work.
+   Any recent phone on a clean surface near a window is enough. Upload via `admin.html`,
+   which resizes, compresses and names the files for you.
+2. **Buy stock** from Adobe Stock, Shutterstock, iStock or Envato — their licences cover
+   exactly this use. Search terms that work well: "business card mockup blank",
+   "letterhead mockup", "roll up banner mockup", "sticker sheet mockup".
+3. One verified CC0 photo is kept at `images/business-card-matte.jpg` if you want to see the
+   photo path working — re-enable it in `js/products.js` or through the admin.
 
 ---
 

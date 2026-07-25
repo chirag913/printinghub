@@ -163,6 +163,38 @@ function renderFooter() {
    Set `image` on a product (e.g. "images/business-card-matte.jpg") and it renders a
    real <img>. Products with no image keep the CSS illustration, so the catalog never
    shows a broken or generic placeholder. `imageAlt` overrides the default alt text. */
+/* Accent palette for illustrations. All on-brand, so a grid of products reads as one
+   family while no two neighbours look identical. A product can pin its own colour with
+   `accent`; otherwise it's derived from the id so it stays stable across page loads. */
+const ILLUS_ACCENTS = [
+  { ink: '#EF4136', deep: '#8f1526' },   // brand red
+  { ink: '#1A1A1A', deep: '#000000' },   // ink black
+  { ink: '#F2B90F', deep: '#b8860b' },   // brand yellow
+  { ink: '#2B6CB0', deep: '#1a4a80' },   // navy
+  { ink: '#2F855A', deep: '#1d5c3d' },   // deep green
+  { ink: '#6B46C1', deep: '#4c3191' },   // plum
+  { ink: '#C05621', deep: '#8a3c14' },   // terracotta
+  { ink: '#4A5568', deep: '#2d3748' }    // slate
+];
+function accentFor(p) {
+  if (p.accent && ILLUS_ACCENTS[p.accent]) return ILLUS_ACCENTS[p.accent];
+  let h = 0;
+  const s = String(p.id || p.name || '');
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return ILLUS_ACCENTS[h % ILLUS_ACCENTS.length];
+}
+function illustrationFor(p) {
+  const markup = ILLUS_MARKUP[p.illustration] || "";
+  if (!markup) return "";
+  const a = accentFor(p);
+  // slight, deterministic tilt so repeated shapes don't line up mechanically
+  let h = 0; const s = String(p.id || '');
+  for (let i = 0; i < s.length; i++) h = (h * 17 + s.charCodeAt(i)) >>> 0;
+  const tilt = ((h % 7) - 3);
+  return '<div class="illus-theme" style="--acc:' + a.ink + ';--acc-deep:' + a.deep +
+         ';--tilt:' + tilt + 'deg;">' + markup + '</div>';
+}
+
 function productVisual(p, opts) {
   opts = opts || {};
   if (p.image) {
@@ -170,9 +202,9 @@ function productVisual(p, opts) {
     const loading = opts.eager ? "" : ' loading="lazy" decoding="async"';
     return '<img class="prod-photo" src="' + p.image + '" alt="' + alt + '"' + loading +
            ' onerror="this.parentNode.classList.add(\'photo-failed\');this.remove();">' +
-           '<div class="photo-fallback">' + (ILLUS_MARKUP[p.illustration] || "") + '</div>';
+           '<div class="photo-fallback">' + illustrationFor(p) + '</div>';
   }
-  return ILLUS_MARKUP[p.illustration] || "";
+  return illustrationFor(p);
 }
 
 /* ---------- product card renderer ---------- */

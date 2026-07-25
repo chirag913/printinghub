@@ -48,9 +48,10 @@ const PRODUCTS_CATALOG = [
     category: "business-cards",
     price: 85, was: 110, unit: "set of 100",
     illustration: "cards", bg: "#FFF6E0", featured: true,
-    // Real photo (CC0). Products without `image` fall back to the CSS illustration.
-    image: "images/business-card-matte.jpg",
-    imageAlt: "A stack of blank matte-finish business cards on a wooden desk",
+    // A real CC0 photo is available at images/business-card-matte.jpg — re-enable it by
+    // uncommenting these two lines (or via admin.html) once the full photo set exists.
+    // image: "images/business-card-matte.jpg",
+    // imageAlt: "A stack of blank matte-finish business cards on a wooden desk",
     description: "Premium 400gsm matte-finish business cards with a smooth soft-touch texture. Full-color double-sided printing, custom logo placement, and rounded-corner options available. Popular with law firms, consultancies, and retail businesses across Dubai.",
     options: [
       { label: "Finish", key: "finish", choices: ["Matte", "Soft-Touch Matte", "Matte + Rounded Corners"] },
