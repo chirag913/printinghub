@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop All Printing Products — PrintingHub Dubai</title>
+<meta name="description" content="Browse 46 printing products across 11 categories: business cards, flyers, letterheads, stickers, brochures, banners, invoice books and corporate gifts. Order any product on WhatsApp.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23EF4136'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='17' font-weight='bold' fill='white' text-anchor='middle'%3EPH%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="site-header" data-active="shop" data-search></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Home</a> / Shop</div>
+    <h1>All Printing Products</h1>
+    <p>Every product below is ordered the same way: pick your options, tap the WhatsApp button, and a specialist confirms your final quote in minutes.</p>
+  </div>
+</section>
+
+<div class="wrap shop-layout">
+  <aside class="filter-panel" aria-label="Filter by category">
+    <div class="fp-title">Categories</div>
+    <div id="filterButtons"></div>
+  </aside>
+
+  <div>
+    <div class="cat-pills" id="catPills"></div>
+    <div class="shop-toolbar">
+      <div class="result-count" id="resultCount"></div>
+    </div>
+    <div class="shop-grid" id="shopGrid"></div>
+    <div class="load-more-row" id="loadMoreRow" style="display:none;">
+      <button class="btn-outline" id="loadMoreBtn">Load more products</button>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/site.js"></script>
+<script>
+  var PAGE_SIZE = 12;
+  var state = { cat: 'all', search: '', shown: PAGE_SIZE };
+
+  // read filters from URL (?cat=..., ?search=...)
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('cat') && getCategory(params.get('cat'))) state.cat = params.get('cat');
+  if (params.get('search')) state.search = params.get('search').trim();
+
+  // pre-fill the header search box with the active query
+  var headerSearch = document.getElementById('siteSearchInput');
+  if (headerSearch) {
+    headerSearch.value = state.search;
+    // on the shop page, search filters live instead of navigating
+    document.getElementById('siteSearchForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      state.search = headerSearch.value.trim();
+      state.shown = PAGE_SIZE;
+      render();
+    });
+    headerSearch.addEventListener('input', function(){
+      state.search = headerSearch.value.trim();
+      state.shown = PAGE_SIZE;
+      render();
+    });
+  }
+
+  function filteredProducts(){
+    var q = state.search.toLowerCase();
+    return PRODUCTS_CATALOG.filter(function(p){
+      if (state.cat !== 'all' && p.category !== state.cat) return false;
+      if (!q) return true;
+      var catName = (getCategory(p.category) || {}).name || '';
+      return p.name.toLowerCase().indexOf(q) !== -1 || catName.toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
+  function buildFilters(){
+    var counts = {};
+    PRODUCTS_CATALOG.forEach(function(p){ counts[p.category] = (counts[p.category] || 0) + 1; });
+    var entries = [['all', 'All Products', PRODUCTS_CATALOG.length]].concat(
+      CATEGORIES.map(function(c){ return [c.slug, c.name, counts[c.slug] || 0]; })
+    );
+    document.getElementById('filterButtons').innerHTML = entries.map(function(e){
+      return '<button data-cat="' + e[0] + '"' + (state.cat === e[0] ? ' class="active"' : '') + '>' + e[1] + '<span class="count">' + e[2] + '</span></button>';
+    }).join('');
+    document.getElementById('catPills').innerHTML = entries.map(function(e){
+      return '<button data-cat="' + e[0] + '"' + (state.cat === e[0] ? ' class="active"' : '') + '>' + e[1] + ' (' + e[2] + ')</button>';
+    }).join('');
+  }
+
+  function setCategory(cat){
+    state.cat = cat;
+    state.shown = PAGE_SIZE;
+    var url = new URL(window.location);
+    if (cat === 'all') url.searchParams.delete('cat'); else url.searchParams.set('cat', cat);
+    history.replaceState(null, '', url);
+    document.querySelectorAll('#filterButtons button, #catPills button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.cat === cat);
+    });
+    render();
+  }
+
+  ['filterButtons','catPills'].forEach(function(id){
+    document.getElementById(id).addEventListener('click', function(e){
+      var btn = e.target.closest('button[data-cat]');
+      if (btn) setCategory(btn.dataset.cat);
+    });
+  });
+
+  document.getElementById('loadMoreBtn').addEventListener('click', function(){
+    state.shown += PAGE_SIZE;
+    render();
+  });
+
+  function render(){
+    var list = filteredProducts();
+    var visible = list.slice(0, state.shown);
+    var grid = document.getElementById('shopGrid');
+    grid.innerHTML = visible.length
+      ? visible.map(renderProductCard).join('')
+      : '<div class="no-results">No products match "' + state.search + '". Try a different search, or <a href="#" id="waAsk" style="color:var(--red);font-weight:700;">ask us on WhatsApp</a> — we print almost anything.</div>';
+    if (!visible.length) {
+      document.getElementById('waAsk').href = waLink("Hi PrintingHub Dubai! I'm looking for: " + state.search + ". Can you print this?");
+      document.getElementById('waAsk').target = '_blank';
+    }
+    attachCardClicks(grid);
+
+    var catName = state.cat === 'all' ? 'all categories' : getCategory(state.cat).name;
+    document.getElementById('resultCount').innerHTML =
+      'Showing <b>' + visible.length + '</b> of <b>' + list.length + '</b> products in <b>' + catName + '</b>' +
+      (state.search ? ' matching "<b>' + state.search + '</b>"' : '');
+    document.getElementById('loadMoreRow').style.display = list.length > state.shown ? '' : 'none';
+  }
+
+  buildFilters();
+  render();
+</script>
+
+</body>
+</html>

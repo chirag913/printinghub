@@ -1,0 +1,10 @@
+{
+  "name": "printinghub-dubai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static website for PrintingHub Dubai, with a password-protected catalog admin that publishes straight to GitHub.",
+  "dependencies": {
+    "@vercel/edge": "^1.1.1"
+  }
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — PrintingHub Dubai</title>
+<meta name="description" content="View specifications, options and indicative pricing, then order this printing product in one tap on WhatsApp. PrintingHub Dubai, Bur Dubai.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23EF4136'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='17' font-weight='bold' fill='white' text-anchor='middle'%3EPH%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="site-header" data-active="shop"></div>
+
+<div class="wrap breadcrumb" id="breadcrumb"></div>
+
+<section class="product-section">
+  <div class="wrap product-grid">
+    <div class="gallery">
+      <div class="gallery-main" id="galleryMain"></div>
+      <div class="gallery-thumbs">
+        <div class="thumb active">Front</div>
+        <div class="thumb">Detail</div>
+        <div class="thumb">Finished</div>
+      </div>
+    </div>
+
+    <div class="details">
+      <h1 id="prodTitle"></h1>
+      <p class="desc collapsed" id="desc"></p>
+      <button class="show-more" id="showMoreBtn">Show more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg></button>
+
+      <div class="price-row"><span class="price" id="priceDisplay"></span><span class="price-was" id="priceWas"></span><span class="price-unit" id="priceUnit"></span></div>
+      <p class="price-note">Prices are indicative. Final quotation will be confirmed after artwork review and specifications approval.</p>
+
+      <div id="optionsContainer"></div>
+
+      <div class="field-label">Quantity <span class="sel-value" id="qtyUnitLabel"></span></div>
+      <div class="qty-row">
+        <div class="qty-stepper">
+          <button id="qtyMinus" aria-label="Decrease quantity">−</button>
+          <span class="qty-val" id="qtyVal">1</span>
+          <button id="qtyPlus" aria-label="Increase quantity">+</button>
+        </div>
+      </div>
+
+      <div class="order-box">
+        <div class="order-summary">You're ordering: <b id="summaryText"></b><br>Tap below to send this exact order to us on WhatsApp — a specialist will confirm final pricing and artwork.</div>
+        <a href="#" class="btn-wa-order" id="waOrderBtn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.9-1.3C8.4 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+          Order on WhatsApp
+        </a>
+        <div class="trust-row"><span>⚡ Rush available</span><span>🎨 Free logo placement</span><span>🚚 Delivery across Dubai</span></div>
+      </div>
+
+      <div class="specs-table">
+        <h2>Specifications</h2>
+        <table id="specsTable"></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="related">
+  <div class="wrap">
+    <h2>You may also need</h2>
+    <div class="prod-grid" id="relatedGrid"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/site.js"></script>
+<script>
+  // ---- read product id from URL; fall back to the first catalog product ----
+  var params = new URLSearchParams(window.location.search);
+  var product = getProduct(params.get('id')) || PRODUCTS_CATALOG[0];
+  var category = getCategory(product.category);
+
+  var state = { qty: 1 };
+  product.options.forEach(function(opt){ state[opt.key] = opt.choices[0]; });
+
+  function render(){
+    document.title = product.name + " — PrintingHub Dubai";
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', product.description.slice(0, 155));
+
+    document.getElementById('breadcrumb').innerHTML =
+      '<a href="index.html">Home</a><span>/</span>' +
+      '<a href="shop.html">Shop</a><span>/</span>' +
+      '<a href="shop.html?cat=' + product.category + '">' + category.name + '</a><span>/</span>' +
+      product.name;
+
+    var gm = document.getElementById('galleryMain');
+    gm.style.background = product.bg;
+    gm.innerHTML = productVisual(product, { eager: true });
+
+    document.getElementById('prodTitle').textContent = product.name;
+    document.getElementById('desc').textContent = product.description;
+    document.getElementById('priceDisplay').textContent = formatPrice(product.price);
+    document.getElementById('priceWas').textContent = product.was ? formatPrice(product.was) : '';
+    document.getElementById('priceUnit').textContent = '/ ' + product.unit;
+    document.getElementById('qtyUnitLabel').textContent = '(× ' + product.unit + ')';
+
+    // options as chip selectors
+    var container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    product.options.forEach(function(opt){
+      var wrap = document.createElement('div');
+      wrap.innerHTML =
+        '<div class="field-label">' + opt.label + ' <span class="sel-value" id="label-' + opt.key + '">' + state[opt.key] + '</span></div>' +
+        '<div class="chip-row" id="chips-' + opt.key + '"></div>';
+      container.appendChild(wrap);
+      var chipRow = wrap.querySelector('#chips-' + opt.key);
+      opt.choices.forEach(function(choice, idx){
+        var btn = document.createElement('button');
+        btn.className = 'chip' + (idx === 0 ? ' selected' : '');
+        btn.textContent = choice;
+        btn.addEventListener('click', function(){
+          chipRow.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('selected'); });
+          btn.classList.add('selected');
+          state[opt.key] = choice;
+          document.getElementById('label-' + opt.key).textContent = choice;
+          updateOrder();
+        });
+        chipRow.appendChild(btn);
+      });
+    });
+
+    document.getElementById('specsTable').innerHTML =
+      product.specs.map(function(s){ return '<tr><td>' + s[0] + '</td><td>' + s[1] + '</td></tr>'; }).join('');
+
+    // related: same category first, then other featured products, excluding self
+    var related = productsByCategory(product.category).filter(function(p){ return p.id !== product.id; });
+    PRODUCTS_CATALOG.filter(function(p){ return p.featured && p.id !== product.id && p.category !== product.category; })
+      .forEach(function(p){ related.push(p); });
+    var relGrid = document.getElementById('relatedGrid');
+    relGrid.innerHTML = related.slice(0, 4).map(renderProductCard).join('');
+    attachCardClicks(relGrid);
+
+    updateOrder();
+  }
+
+  document.getElementById('showMoreBtn').addEventListener('click', function(){
+    var desc = document.getElementById('desc');
+    var btn = document.getElementById('showMoreBtn');
+    var collapsed = desc.classList.toggle('collapsed');
+    btn.classList.toggle('open', !collapsed);
+    btn.firstChild.textContent = collapsed ? 'Show more ' : 'Show less ';
+  });
+
+  document.getElementById('qtyMinus').addEventListener('click', function(){ changeQty(-1); });
+  document.getElementById('qtyPlus').addEventListener('click', function(){ changeQty(1); });
+  function changeQty(delta){
+    state.qty = Math.max(1, state.qty + delta);
+    document.getElementById('qtyVal').textContent = state.qty;
+    updateOrder();
+  }
+
+  // rebuild the WhatsApp link on every selector change
+  function updateOrder(){
+    var optionLines = product.options.map(function(opt){ return opt.label + ': ' + state[opt.key]; }).join('\n');
+    var summaryParts = product.options.map(function(opt){ return state[opt.key]; }).join(', ');
+    document.getElementById('summaryText').textContent = product.name + ' — ' + summaryParts + ', Qty: ' + state.qty;
+
+    var estimated = product.price * state.qty;
+    var message =
+      "Hi PrintingHub Dubai! I'd like to order:\n\n" +
+      "Product: " + product.name + "\n" +
+      optionLines + "\n" +
+      "Quantity: " + state.qty + " × " + product.unit + "\n" +
+      "Estimated Price: " + formatPrice(product.price) + " per " + product.unit +
+      (state.qty > 1 ? " (approx. " + formatPrice(estimated) + " total)" : "") +
+      " — before final quote\n\n" +
+      "Please confirm availability and final quote.";
+
+    document.getElementById('waOrderBtn').setAttribute('href', waLink(message));
+  }
+
+  render();
+</script>
+
+</body>
+</html>

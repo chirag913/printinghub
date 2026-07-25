@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recent Work Gallery — PrintingHub Dubai</title>
+<meta name="description" content="A sample of recent printing projects from PrintingHub Dubai: business cards, exhibition banners, invoice books, packaging labels, menus and corporate gifts for Dubai businesses.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23EF4136'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='17' font-weight='bold' fill='white' text-anchor='middle'%3EPH%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="site-header" data-active="gallery"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Home</a> / Recent Work</div>
+    <h1>Recent Work</h1>
+    <p>A sample of jobs that left our facility recently. Click any project to view it larger.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="gal-filters" id="galFilters" role="group" aria-label="Filter gallery by category"></div>
+    <div class="gal-grid" id="galGrid"></div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Project preview">
+  <div class="lb-inner">
+    <button class="lb-close" id="lbClose" aria-label="Close preview">✕</button>
+    <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous project">‹</button>
+    <button class="lb-nav lb-next" id="lbNext" aria-label="Next project">›</button>
+    <div class="lb-visual" id="lbVisual"></div>
+    <div class="lb-cap">
+      <div><div class="g-cat" id="lbCat"></div><h3 id="lbTitle"></h3></div>
+      <a href="#" class="btn-mini-wa" id="lbWa" style="width:auto;padding:10px 18px;" target="_blank" rel="noopener">Order similar</a>
+    </div>
+  </div>
+</div>
+
+<section class="cta-band">
+  <div class="wrap">
+    <div>
+      <h2>Want something like this?</h2>
+      <p>Send us a screenshot of any project — we'll quote a version with your branding.</p>
+    </div>
+    <a href="#" class="btn-wa-pill wa-generic" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.9-1.3C8.4 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>Get a Quote</a>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/site.js"></script>
+<script>
+  document.querySelectorAll('.wa-generic').forEach(function(a){ a.href = waLink(); });
+
+  // gallery items reuse the shared CSS illustrations as placeholders
+  // (swap for real project photos before launch — see README)
+  var GALLERY = [
+    { title: "Spot-UV cards for a law firm, DIFC",            cat: "Business Cards", illus: "cards",     bg: "#FFF6E0" },
+    { title: "Exhibition backdrop, GITEX stand",              cat: "Banners",        illus: "banner",    bg: "#FDEEEE" },
+    { title: "Bilingual NCR invoice books, auto garage",      cat: "Stationery",     illus: "book",      bg: "#F0F0F0" },
+    { title: "Wedding suite with foil accents",               cat: "Events",         illus: "envelope",  bg: "#EAF3FF" },
+    { title: "Waterproof juice-bottle labels, café chain",    cat: "Packaging",      illus: "sticker",   bg: "#EAF6EF" },
+    { title: "Tri-fold clinic brochure, 5,000 pcs",           cat: "Brochures",      illus: "trifold",   bg: "#EAF3FF" },
+    { title: "Ramadan gift boxes for a bank",                 cat: "Gifts",          illus: "gift",      bg: "#FDEEEE" },
+    { title: "Conqueror letterhead suite, family office",     cat: "Stationery",     illus: "letterhead",bg: "#FFF6E0" },
+    { title: "Grand-opening flyer blitz, 20,000 pcs",         cat: "Flyers",         illus: "flyer",     bg: "#FDEEEE" },
+    { title: "Eid greeting cards, gold foil",                 cat: "Events",         illus: "greeting",  bg: "#EAF6EF" },
+    { title: "Roll-up banners for a fitness launch",          cat: "Banners",        illus: "banner",    bg: "#EAF3FF" },
+    { title: "Kraft eco cards, specialty coffee brand",       cat: "Business Cards", illus: "cards",     bg: "#F2EDE4" }
+  ];
+
+  var activeCat = "All";
+  var visibleItems = GALLERY.slice();
+  var lbIndex = 0;
+
+  var cats = ["All"].concat(GALLERY.map(function(g){ return g.cat; }).filter(function(c, i, a){ return a.indexOf(c) === i; }));
+  var filtersEl = document.getElementById('galFilters');
+  filtersEl.innerHTML = cats.map(function(c){
+    return '<button data-cat="' + c + '"' + (c === "All" ? ' class="active"' : '') + '>' + c + '</button>';
+  }).join('');
+  filtersEl.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-cat]');
+    if (!btn) return;
+    activeCat = btn.dataset.cat;
+    filtersEl.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b === btn); });
+    renderGallery();
+  });
+
+  function renderGallery(){
+    visibleItems = activeCat === "All" ? GALLERY.slice() : GALLERY.filter(function(g){ return g.cat === activeCat; });
+    document.getElementById('galGrid').innerHTML = visibleItems.map(function(g, i){
+      return '<div class="gal-item" data-idx="' + i + '">' +
+        '<div class="gal-visual" style="background:' + g.bg + ';">' + ILLUS_MARKUP[g.illus] + '</div>' +
+        '<div class="gal-cap"><div class="g-cat">' + g.cat + '</div><h3>' + g.title + '</h3></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ---- vanilla lightbox ----
+  var lightbox = document.getElementById('lightbox');
+  function openLightbox(i){
+    lbIndex = i;
+    var g = visibleItems[lbIndex];
+    var vis = document.getElementById('lbVisual');
+    vis.style.background = g.bg;
+    vis.innerHTML = ILLUS_MARKUP[g.illus];
+    document.getElementById('lbCat').textContent = g.cat;
+    document.getElementById('lbTitle').textContent = g.title;
+    document.getElementById('lbWa').href = waLink("Hi PrintingHub Dubai! I saw \"" + g.title + "\" in your gallery — I'd like something similar for my business.");
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function stepLightbox(dir){
+    openLightbox((lbIndex + dir + visibleItems.length) % visibleItems.length);
+  }
+
+  document.getElementById('galGrid').addEventListener('click', function(e){
+    var item = e.target.closest('.gal-item');
+    if (item) openLightbox(parseInt(item.dataset.idx, 10));
+  });
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', function(){ stepLightbox(-1); });
+  document.getElementById('lbNext').addEventListener('click', function(){ stepLightbox(1); });
+  lightbox.addEventListener('click', function(e){ if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', function(e){
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') stepLightbox(-1);
+    if (e.key === 'ArrowRight') stepLightbox(1);
+  });
+
+  renderGallery();
+</script>
+
+</body>
+</html>
