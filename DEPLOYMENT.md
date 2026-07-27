@@ -117,8 +117,10 @@ Publish button, and tells you to use Export instead. To exercise the real thing 
 npx vercel dev
 ```
 
-Otherwise a plain static server is fine for everything except publishing:
+Otherwise a static server is fine for everything except publishing. Use `serve` rather than
+`http-server`, because the site uses clean URLs (`/shop`, not `/shop.html`) and `serve`
+resolves extensionless paths the same way Vercel does:
 
 ```bash
-npx http-server . -p 8123 -c-1
+npx serve . -l 8123
 ```

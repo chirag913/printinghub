@@ -162,10 +162,14 @@ illustrated set looks deliberate.
 
 ## Local preview
 
-Any static server works, e.g.:
+The site uses **clean URLs** (`/shop`, not `/shop.html`), so the local server has to resolve
+extensionless paths the same way Vercel does. Use `serve` — it does this by default:
 
 ```bash
-npx http-server . -p 8123 -c-1
+npx serve . -l 8123
 ```
 
-then open http://localhost:8123/ — or just double-click `index.html`.
+then open http://localhost:8123/.
+
+> Because of clean URLs, opening `index.html` directly from the filesystem no longer works —
+> internal links like `/shop` need a server. Use the command above.

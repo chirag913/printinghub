@@ -2,7 +2,7 @@
    PrintingHub Dubai — shared site chrome & helpers
    Injects the header, footer and floating WhatsApp bubble on
    every page, and provides the product-card renderer used by
-   index.html, shop.html and product-page.html.
+   the home, shop and product pages.
 
    Usage per page:
      <div id="site-header" data-active="shop" data-search></div>
@@ -57,12 +57,12 @@ const ILLUS_MARKUP = {
 
 /* ---------- header / footer injection ---------- */
 const NAV_LINKS = [
-  ["index.html", "Home", "home"],
-  ["shop.html", "Shop", "shop"],
-  ["services.html", "Services", "services"],
-  ["about.html", "About", "about"],
-  ["faq.html", "FAQ", "faq"],
-  ["contact.html", "Contact", "contact"]
+  ["/", "Home", "home"],
+  ["/shop", "Shop", "shop"],
+  ["/services", "Services", "services"],
+  ["/about", "About", "about"],
+  ["/faq", "FAQ", "faq"],
+  ["/contact", "Contact", "contact"]
 ];
 
 function renderHeader() {
@@ -85,7 +85,7 @@ function renderHeader() {
     '</div>' +
     '<header class="site-header">' +
       '<div class="wrap topbar">' +
-        '<a href="index.html" class="logo" aria-label="PrintingHub Dubai home">Printing<span>Hub</span></a>' +
+        '<a href="/" class="logo" aria-label="PrintingHub Dubai home">Printing<span>Hub</span></a>' +
         '<nav class="main-nav" aria-label="Main navigation">' + navHtml + '</nav>' +
         '<div class="header-actions">' +
           '<a href="' + waLink() + '" class="btn-wa-top" target="_blank" rel="noopener">' + WA_ICON + '<span class="wa-label">Order on WhatsApp</span></a>' +
@@ -98,7 +98,7 @@ function renderHeader() {
   if (withSearch) {
     html +=
       '<div class="util-bar">' +
-        '<form class="wrap" id="siteSearchForm" role="search" action="shop.html" method="get">' +
+        '<form class="wrap" id="siteSearchForm" role="search" action="/shop" method="get">' +
           '<div class="search-mid">' +
             '<svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>' +
             '<input type="text" name="search" id="siteSearchInput" placeholder="Search for products (e.g. business cards, banners...)" aria-label="Search products">' +
@@ -132,20 +132,20 @@ function renderFooter() {
             '<p style="max-width:250px;">Fast, friendly commercial printing for Dubai businesses since 2012. Order in minutes on WhatsApp.</p>' +
           '</div>' +
           '<div><h2>Company</h2>' +
-            '<a href="about.html">About Us</a>' +
-            '<a href="services.html">Our Services</a>' +
-            '<a href="index.html#why-us">Why Choose Us</a>' +
-            '<a href="gallery.html">Recent Work</a>' +
-            '<a href="testimonials.html">Testimonials</a>' +
-            '<a href="faq.html">FAQ</a>' +
+            '<a href="/about">About Us</a>' +
+            '<a href="/services">Our Services</a>' +
+            '<a href="/#why-us">Why Choose Us</a>' +
+            '<a href="/gallery">Recent Work</a>' +
+            '<a href="/testimonials">Testimonials</a>' +
+            '<a href="/faq">FAQ</a>' +
           '</div>' +
           '<div><h2>Shop</h2>' +
-            '<a href="shop.html?cat=business-cards">Business Cards</a>' +
-            '<a href="shop.html?cat=banners-posters">Banners & Posters</a>' +
-            '<a href="shop.html?cat=invoice-books">Invoice Books</a>' +
-            '<a href="shop.html?cat=stickers-labels">Stickers & Labels</a>' +
-            '<a href="shop.html?cat=corporate-gifts">Corporate Gifts</a>' +
-            '<a href="shop.html">All Products</a>' +
+            '<a href="/shop?cat=business-cards">Business Cards</a>' +
+            '<a href="/shop?cat=banners-posters">Banners & Posters</a>' +
+            '<a href="/shop?cat=invoice-books">Invoice Books</a>' +
+            '<a href="/shop?cat=stickers-labels">Stickers & Labels</a>' +
+            '<a href="/shop?cat=corporate-gifts">Corporate Gifts</a>' +
+            '<a href="/shop">All Products</a>' +
           '</div>' +
           '<div><h2>Contact</h2>' +
             '<a href="' + waLink() + '" target="_blank" rel="noopener">' + SITE.phoneDisplay + ' (WhatsApp)</a>' +
@@ -221,10 +221,10 @@ function renderProductCard(p) {
   return (
     '<article class="prod-card" data-product-id="' + p.id + '">' +
       badge +
-      '<a href="product-page.html?id=' + p.id + '" class="prod-img" style="background:' + p.bg + ';" aria-label="' + p.name + '">' + illus + '</a>' +
+      '<a href="/product-page?id=' + p.id + '" class="prod-img" style="background:' + p.bg + ';" aria-label="' + p.name + '">' + illus + '</a>' +
       '<div class="prod-body">' +
         '<div class="cat-tag">' + (cat ? cat.name : "") + '</div>' +
-        '<h3><a href="product-page.html?id=' + p.id + '">' + p.name + '</a></h3>' +
+        '<h3><a href="/product-page?id=' + p.id + '">' + p.name + '</a></h3>' +
         '<div class="price-line"><span class="now">' + formatPrice(p.price) + '</span>' + wasHtml + '</div>' +
         '<a href="' + waLink(msg) + '" class="btn-mini-wa" target="_blank" rel="noopener">' + WA_ICON + 'Order on WhatsApp</a>' +
       '</div>' +
@@ -240,7 +240,7 @@ function attachCardClicks(container) {
     card.style.cursor = "pointer";
     card.addEventListener("click", function (e) {
       if (e.target.closest(".btn-mini-wa") || e.target.closest("a")) return;
-      window.location.href = "product-page.html?id=" + card.dataset.productId;
+      window.location.href = "/product-page?id=" + card.dataset.productId;
     });
   });
 }

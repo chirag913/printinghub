@@ -58,15 +58,15 @@
 <section class="quick-cats" aria-label="Popular categories">
   <div class="wrap">
     <div class="quick-grid">
-      <a class="quick-card" href="shop.html?cat=business-cards">
+      <a class="quick-card" href="/shop?cat=business-cards">
         <div class="quick-img" style="background:linear-gradient(135deg,#EF4136,#8f1526);"><svg viewBox="0 0 24 24" stroke-width="1.6"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg></div>
         <div><h3>Business Cards</h3><p>Best deals of the month</p><span class="link">Shop now →</span></div>
       </a>
-      <a class="quick-card" href="shop.html?cat=banners-posters">
+      <a class="quick-card" href="/shop?cat=banners-posters">
         <div class="quick-img" style="background:linear-gradient(135deg,#F4C542,#F2B90F);"><svg viewBox="0 0 24 24" stroke-width="1.6"><path d="M6 3v18M6 3l12 4-12 4" stroke="#1A1A1A"/></svg></div>
         <div><h3>Banners &amp; Posters</h3><p>Flat 20% off large format</p><span class="link">Shop now →</span></div>
       </a>
-      <a class="quick-card" href="shop.html?cat=invoice-books">
+      <a class="quick-card" href="/shop?cat=invoice-books">
         <div class="quick-img" style="background:linear-gradient(135deg,#1A1A1A,#3a3a3a);"><svg viewBox="0 0 24 24" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
         <div><h3>Invoice Books</h3><p>Custom NCR sets, any size</p><span class="link">Shop now →</span></div>
       </a>
@@ -79,7 +79,7 @@
     <div class="sec-title"><div class="dash"></div><h2>Bestsellers</h2></div>
     <div class="sec-tabs" id="homeTabs"></div>
     <div class="prod-grid" id="homeGrid"></div>
-    <div class="center-cta"><a href="shop.html" class="btn-outline">Browse all 46 products →</a></div>
+    <div class="center-cta"><a href="/shop" class="btn-outline">Browse all 46 products →</a></div>
   </div>
 </section>
 
@@ -143,7 +143,7 @@
         <div class="testi-who"><div class="avatar">MK</div><div><div class="who-name">Mohammed Khan</div><div class="who-co">Khan Auto Garage</div></div></div>
       </div>
     </div>
-    <div class="center-cta"><a href="testimonials.html" class="btn-outline">Read more reviews →</a></div>
+    <div class="center-cta"><a href="/testimonials" class="btn-outline">Read more reviews →</a></div>
   </div>
 </section>
 
@@ -164,7 +164,7 @@
 <script>
   // sidebar categories from the shared catalog
   document.getElementById('sidebarCats').innerHTML = CATEGORIES.map(function(c){
-    return '<li><a href="shop.html?cat=' + c.slug + '"><span class="left">' + CAT_ICONS[c.icon] + c.name + '</span><span class="arrow">›</span></a></li>';
+    return '<li><a href="/shop?cat=' + c.slug + '"><span class="left">' + CAT_ICONS[c.icon] + c.name + '</span><span class="arrow">›</span></a></li>';
   }).join('');
 
   // generic WhatsApp CTAs
